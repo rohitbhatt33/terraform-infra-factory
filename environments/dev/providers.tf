@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   region = "us-east-1" # Feel free to change this to your closest region
-  
+
   default_tags {
     tags = {
       Environment = "Development"
