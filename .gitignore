@@ -7,5 +7,3 @@
 # Variables
 *.tfvars
 *.tfvars.json
-
-.claude
