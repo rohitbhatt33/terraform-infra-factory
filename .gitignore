@@ -10,5 +10,4 @@
 
 # Crash logs
 crash.log
-.secret_file
 .claude
