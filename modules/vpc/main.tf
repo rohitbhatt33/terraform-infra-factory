@@ -43,64 +43,64 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# # 5. Elastic IP for the NAT Gateway
-# resource "aws_eip" "nat" {
-#   domain     = "vpc"
-#   depends_on = [aws_internet_gateway.igw]
+# 5. Elastic IP for the NAT Gateway
+resource "aws_eip" "nat" {
+  domain     = "vpc"
+  depends_on = [aws_internet_gateway.igw]
 
-#   tags = {
-#     Name = "${var.environment}-nat-eip"
-#   }
-# }
+  tags = {
+    Name = "${var.environment}-nat-eip"
+  }
+}
 
-# # 6. NAT Gateway (Allows private subnets to securely access the internet)
-# resource "aws_nat_gateway" "nat" {
-#   allocation_id = aws_eip.nat.id
-#   subnet_id     = aws_subnet.public[0].id # Places the NAT gateway in the first public subnet
+# 6. NAT Gateway (Allows private subnets to securely access the internet)
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id # Places the NAT gateway in the first public subnet
 
-#   tags = {
-#     Name = "${var.environment}-nat-gateway"
-#   }
-# }
+  tags = {
+    Name = "${var.environment}-nat-gateway"
+  }
+}
 
-# # 7. Route Table for Public Subnets
-# resource "aws_route_table" "public" {
-#   vpc_id = aws_vpc.main.id
+# 7. Route Table for Public Subnets
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
 
-#   tags = {
-#     Name = "${var.environment}-public-rt"
-#   }
-# }
+  tags = {
+    Name = "${var.environment}-public-rt"
+  }
+}
 
-# # 8. Route Table for Private Subnets
-# resource "aws_route_table" "private" {
-#   vpc_id = aws_vpc.main.id
+# 8. Route Table for Private Subnets
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
 
-#   route {
-#     cidr_block     = "0.0.0.0/0"
-#     nat_gateway_id = aws_nat_gateway.nat.id
-#   }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
 
-#   tags = {
-#     Name = "${var.environment}-private-rt"
-#   }
-# }
+  tags = {
+    Name = "${var.environment}-private-rt"
+  }
+}
 
-# # 9. Associate Public Subnets with Public Route Table
-# resource "aws_route_table_association" "public" {
-#   count          = length(var.public_subnet_cidrs)
-#   subnet_id      = aws_subnet.public[count.index].id
-#   route_table_id = aws_route_table.public.id
-# }
+# 9. Associate Public Subnets with Public Route Table
+resource "aws_route_table_association" "public" {
+  count          = length(var.public_subnet_cidrs)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
 
-# # 10. Associate Private Subnets with Private Route Table
-# resource "aws_route_table_association" "private" {
-#   count          = length(var.private_subnet_cidrs)
-#   subnet_id      = aws_subnet.private[count.index].id
-#   route_table_id = aws_route_table.private.id
-# }
+# 10. Associate Private Subnets with Private Route Table
+resource "aws_route_table_association" "private" {
+  count          = length(var.private_subnet_cidrs)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private.id
+}
