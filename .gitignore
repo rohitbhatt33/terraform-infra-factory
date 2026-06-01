@@ -8,6 +8,4 @@
 *.tfvars
 *.tfvars.json
 
-# Crash logs
-crash.log
 .claude
